@@ -1,0 +1,65 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.regex.*;
+
+public class SimpleChatBotGUI extends JFrame {
+    private JTextArea chatArea;
+    private JTextField inputField;
+    private Map<Pattern, String> responses;
+
+    public SimpleChatBotGUI() {
+        setTitle("Java NLP Chatbot");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        chatArea = new JTextArea();
+        chatArea.setEditable(false);
+
+        inputField = new JTextField();
+        inputField.addActionListener(e -> processInput());
+
+        add(new JScrollPane(chatArea), BorderLayout.CENTER);
+        add(inputField, BorderLayout.SOUTH);
+        initializeResponses();
+
+        chatArea.append("Bot: Hi! How can I help you?\n");
+    }
+
+    private void initializeResponses() {
+        responses = new LinkedHashMap<>();
+        responses.put(Pattern.compile("(?i)hi|hello|hey"), "Hello! How can I assist you today?");
+        responses.put(Pattern.compile("(?i).your name."), "I'm a Java NLP Chatbot.");
+        responses.put(Pattern.compile("(?i).weather."), "Sorry, I can't check the weather yet.");
+        responses.put(Pattern.compile("(?i).help."), "Sure! You can ask me FAQs or general questions.");
+        responses.put(Pattern.compile("(?i).bye."), "Goodbye! Have a nice day!");
+        responses.put(Pattern.compile("(?i).how are you."), "I'm a bot, but I'm functioning well!");
+        // Add more patterns for FAQs or specific responses here
+    }
+
+    private void processInput() {
+        String userInput = inputField.getText();
+        chatArea.append("You: " + userInput + "\n");
+        String botReply = getResponse(userInput);
+        chatArea.append("Bot: " + botReply + "\n");
+        inputField.setText("");
+    }
+
+    // NLP-like intent matching (rule-based)
+    private String getResponse(String input) {
+        for (Map.Entry<Pattern, String> entry : responses.entrySet()) {
+            if (entry.getKey().matcher(input).find()) {
+                return entry.getValue();
+            }
+        }
+        return "I'm sorry, I didn't understand that. Can you rephrase?";
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new SimpleChatBotGUI().setVisible(true);
+        });
+    }
+}
